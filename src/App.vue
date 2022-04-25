@@ -1,26 +1,28 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <WeatherModal/>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import WeatherModal from './views/WeatherModal.vue'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
-  }
+    WeatherModal
+}
 }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+:root {
+  --sky-blue: #7cb2ee;
+  --white: #f2fbff;
+  --mid-night-blue: #110e3a;
+
+}
+
+body {
+  background: var(--sky-blue);
+  margin: 0;
 }
 </style>
