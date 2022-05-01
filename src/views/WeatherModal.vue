@@ -1,91 +1,232 @@
 <template>
-  <div class="modal">
-    <div class="info"></div>
-    <div class="todayWeather">
-      <div v-if="ready">
-        <p style = "color: white;">{{ currentMonth }} {{ currentDay }}</p>
-        <p style = "color: white;">{{ currentCity }}</p>
-        <p style = "color: white;">{{ currentTemperature }}</p>
-        <p style = "color: white;">{{ minTemperature }}</p>
-        <p style = "color: white;">{{ maxTemperature }}</p>
+  <section class="top-banner">
+    <div class="container center">
+      <h1 class="heading">Weather</h1>
+      <div class="search-bar">
+        <input type="text" v-model="searchCity" autofocus>
+        <button @click="search">Search</button>
+        <span class="msg"></span>
       </div>
-      <div v-if="!ready"><img src = "../assets/spinner.svg"></div>
     </div>
-  </div>
+  </section>
+  <section class="cards">
+    <div class="spinner" v-if="!ready"><img src = "../assets/spinner.svg"></div>
+    <div class="container">
+      <div class="cities">
+        <WeatherCard
+          v-if="currentCity"
+          :city="currentCity"
+          :currentDay="currentDay" 
+          :currentMonth="currentMonth"
+        />
+        <WeatherCard
+          v-for="(city, index) in citys"
+          :key="index"
+          :city="city.name"
+          :currentDay="currentDay" 
+          :currentMonth="currentMonth"
+        />
+    </div>
+    </div>
+  </section>
 </template>
 
 <script>
-import { getTemperatureByPosition } from '../weather';
+import { getLocationByPosition } from '../weather';
+import WeatherCard from '@/components/WeatherCard.vue';
 
 export default {
-  name: 'WeatherModal',
+  name: "WeatherModal",
   data: () => ({
-    currentTemperature: 0,
-    minTemperature: 0,
-    maxTemperature: 0,
     ready: false,
     currentPosition: {},
     currentCity: '',
-    currentMonth: 0,
+    currentMonth: '',
     currentDay: 0,
     month: {
-      1: 'Jan',
-      2: 'Feb',
-      3: 'Mar',
-      4: 'Apr',
-      5: 'May',
-      6: 'Jun',
-      7: 'Jul',
-      8: 'Aug',
-      9: 'Sep',
-      10: 'Oct',
-      11: 'Nov',
-      12: 'Dec'
-    }
+      1: "Jan",
+      2: "Feb",
+      3: "Mar",
+      4: "Apr",
+      5: "May",
+      6: "Jun",
+      7: "Jul",
+      8: "Aug",
+      9: "Sep",
+      10: "Oct",
+      11: "Nov",
+      12: "Dec"
+    },
+    searchCity:'',
+    citys: []
   }),
-  mounted () {
+  mounted() {
     const date = new Date();
     this.currentDay = date.getDate();
     this.currentMonth = this.month[date.getMonth() + 1];
     navigator.geolocation.getCurrentPosition((position) => {
-      this.currentPosition = position;
-    })
+        this.currentPosition = position;
+    });
+  },
+  methods: {
+    search () {
+      this.citys.push({ 
+        name: this.searchCity 
+      });
+      this.searchCity = '';
+    }
   },
   watch: {
-    currentPosition () {
-      getTemperatureByPosition(this.currentPosition).then((res) => {
-        this.currentTemperature = Math.round(res.data.main.temp * 10) / 10;
-        this.minTemperature = Math.round(res.data.main.temp_min * 10) / 10;
-        this.maxTemperature = Math.round(res.data.main.temp_max * 10) / 10;
+    currentPosition() {
+      this.ready = true;
+      getLocationByPosition(this.currentPosition).then((res) => {
         this.currentCity = res.data.name;
-        this.ready = true;
       });
     }
-  }
+  },
+  components: {
+    WeatherCard
+  },
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-.modal {
-  width:72vw;
+.center {
   display: flex;
-  height:80vh;
   justify-content: center;
-  margin:10vh auto;
-  border-radius:24px;
-  overflow:hidden;
+  align-items: center;
+  flex-direction: column;
 }
 
-.todayWeather {
-  background: var(--mid-night-blue);
-  width:35%;
-  height:100%;
+.spinner {
+  display: flex;
+  justify-content: center;
 }
 
-.info {
-  background: var(--white);;
-  width:65%;
-  height:100%;
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.top-banner {
+  color: var(--text_light);
+}
+ 
+.heading {
+  font-weight: bold;
+  font-size: 4rem;
+  letter-spacing: 0.02em;
+  padding: 0 0 30px 0;
+}
+ 
+.top-banner .search-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+ 
+.top-banner .search-bar input {
+  font-size: 2rem;
+  height: 40px;
+  padding: 5px 5px 10px;
+  border-bottom: 1px solid;
+}
+ 
+.top-banner .search-bar input::placeholder {
+  color: currentColor; 
+}
+ 
+.top-banner .search-bar button {
+  font-size: 1rem;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+  padding: 15px 20px;
+  margin-left: 15px;
+  border-radius: 5px;
+  background: var(--red);
+  transition: background 0.3s ease-in-out;
+}
+ 
+.top-banner .search-bar button:hover {
+  background: var(--darkred);
+}
+ 
+.top-banner .search-bar .msg {
+  position: absolute;
+  bottom: -40px;
+  left: 0;
+  max-width: 450px;
+  min-height: 40px;
+}
+
+.card {
+  margin: 50px 0 20px;
+}
+
+.cards .cities {
+  display: grid;
+  grid-gap: 32px 20px;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media screen and (max-width: 1000px) { 
+  section .cities {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+ 
+@media screen and (max-width: 700px) {
+  section .cities {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .top-banner .search-bar {
+    flex-direction: column;
+  }
+
+  .top-banner .search-bar button {
+    font-size: 1rem;
+    font-weight: bold;
+    letter-spacing: 0.1em;
+    padding: 15px 20px;
+    margin-left: 15px;
+    border-radius: 5px;
+    background: var(--red);
+    transition: background 0.3s ease-in-out;
+  }
+ 
+  .top-banner .search-bar button:hover {
+    background: var(--darkred);
+  }
+}
+ 
+@media screen and (max-width: 500px) {  
+  section .cities {
+    grid-template-columns: repeat(1, 1fr);
+  }
+
+  .top-banner .search-bar {
+    flex-direction: column;
+  }
+   
+  .top-banner .search-bar input,
+  .top-banner .search-bar button {
+    width: 100%;
+  }
+ 
+  .top-banner .search-bar button {
+    margin: 20px 0 0 0;
+  }
+   
+  .top-banner .search-bar .msg {
+    position: static;
+    max-width: none;
+    min-height: 0;
+    margin-top: 10px;
+  }
 }
 </style>
