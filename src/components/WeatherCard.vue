@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { getTemperatureByCity } from '../weather';
+import { getTemperatureByCity, getTemperatureByPosition } from '../weather';
 
 export default {
   name: 'WeatherCard',
@@ -33,22 +33,22 @@ export default {
   }),
   props: {
     city: String,
+    position: Object,
     currentMonth: String,
     currentDay: Number,
   },
-  mounted () {
+  async mounted () {
     this.ready = false;
-    getTemperatureByCity(this.city).then((res) => {
-      const iconId = res.data.weather[0].icon;
-      this.temperature = Math.round(res.data.main.temp * 10) / 10;
-      this.minTemperature = Math.round(res.data.main.temp_min * 10) / 10;
-      this.maxTemperature = Math.round(res.data.main.temp_max * 10) / 10;
-      this.cityTrueName = res.data.name;
-      this.weatherDescription = res.data.weather[0].description;
-      this.iconUrl = `https://openweathermap.org/img/wn/${iconId}@2x.png`;
-      this.country = res.data.sys.country;
-      this.ready = true;
-    });
+    const response = this.position ? await getTemperatureByPosition(this.position) : await getTemperatureByCity(this.city);
+    const iconId = response.data.weather[0].icon;
+    this.temperature = Math.round(response.data.main.temp * 10) / 10;
+    this.minTemperature = Math.round(response.data.main.temp_min * 10) / 10;
+    this.maxTemperature = Math.round(response.data.main.temp_max * 10) / 10;
+    this.cityTrueName = response.data.name;
+    this.weatherDescription = response.data.weather[0].description;
+    this.iconUrl = `https://openweathermap.org/img/wn/${iconId}@2x.png`;
+    this.country = response.data.sys.country;
+    this.ready = true;
   }
 }
 </script>

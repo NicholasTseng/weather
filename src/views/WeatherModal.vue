@@ -14,17 +14,13 @@
     <div class="container">
       <div class="cities">
         <WeatherCard
-          v-if="currentCity"
-          :city="currentCity"
-          :currentDay="currentDay" 
-          :currentMonth="currentMonth"
+          v-if="ready"
+          :position="currentPosition"
         />
         <WeatherCard
           v-for="(city, index) in citys"
           :key="index"
-          :city="city.name"
-          :currentDay="currentDay" 
-          :currentMonth="currentMonth"
+          :city="city"
         />
     </div>
     </div>
@@ -32,7 +28,6 @@
 </template>
 
 <script>
-import { getLocationByPosition } from '../weather';
 import WeatherCard from '@/components/WeatherCard.vue';
 
 export default {
@@ -40,48 +35,23 @@ export default {
   data: () => ({
     ready: false,
     currentPosition: {},
-    currentCity: '',
-    currentMonth: '',
-    currentDay: 0,
-    month: {
-      1: "Jan",
-      2: "Feb",
-      3: "Mar",
-      4: "Apr",
-      5: "May",
-      6: "Jun",
-      7: "Jul",
-      8: "Aug",
-      9: "Sep",
-      10: "Oct",
-      11: "Nov",
-      12: "Dec"
-    },
     searchCity:'',
     citys: []
   }),
   mounted() {
-    const date = new Date();
-    this.currentDay = date.getDate();
-    this.currentMonth = this.month[date.getMonth() + 1];
     navigator.geolocation.getCurrentPosition((position) => {
-        this.currentPosition = position;
+      this.currentPosition = position;
     });
   },
   methods: {
     search () {
-      this.citys.push({ 
-        name: this.searchCity 
-      });
+      this.citys.push(this.searchCity);
       this.searchCity = '';
     }
   },
   watch: {
     currentPosition() {
       this.ready = true;
-      getLocationByPosition(this.currentPosition).then((res) => {
-        this.currentCity = res.data.name;
-      });
     }
   },
   components: {
