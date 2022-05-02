@@ -46,7 +46,7 @@ export default {
     this.maxTemperature = Math.round(response.data.main.temp_max * 10) / 10;
     this.cityName = response.data.name;
     this.weatherDescription = response.data.weather[0].description;
-    this.iconUrl = `https://openweathermap.org/img/wn/${iconId}@2x.png`;
+    this.iconUrl = require(`../assets/weather-icon/${iconId}.svg`);
     this.country = response.data.sys.country;
     this.state = this.city && this.city.state;
     this.ready = true;
