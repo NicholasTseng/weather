@@ -1,14 +1,14 @@
 <template>
-  <WeatherModal/>
+  <Weather/>
 </template>
 
 <script>
-import WeatherModal from './views/WeatherModal.vue'
+import Weather from './views/Weather.vue'
 
 export default {
   name: 'App',
   components: {
-    WeatherModal
+    Weather
   }
 }
 </script>

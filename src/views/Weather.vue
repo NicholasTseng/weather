@@ -31,22 +31,23 @@
 import WeatherCard from '@/components/WeatherCard.vue';
 
 export default {
-  name: "WeatherModal",
+  name: "WeatherView",
   data: () => ({
     ready: false,
     currentPosition: {},
     searchCity:'',
-    cityIds: []
+    cityIds: [],
+    cityList: []
   }),
   mounted() {
+    this.cityList = require('../city.list.json');
     navigator.geolocation.getCurrentPosition((position) => {
       this.currentPosition = position;
     });
   },
   methods: {
     search () {
-      const cityList = require('../city.list.json');
-      const city = cityList.filter(
+      const city = this.cityList.filter(
         (city) => city.name.toLowerCase() === this.searchCity.toLowerCase()
       );
       this.cityIds.push(...city);
