@@ -10,7 +10,7 @@ export const getTemperatureByPosition = (position) => {
   return axios.get(`${urlBase}weather?lat=${latitude}&lon=${longitude}&units=metric&appid=${apiKey}&units=metric`);
 }
 
-export const getTemperatureByCity = (city) => {
-  return axios.get(`${urlBase}weather?q=${city}&appid=${apiKey}&units=metric`)
+export const getTemperatureByCityId = (cityId) => {
+  return axios.get(`${urlBase}weather?id=${cityId}&appid=${apiKey}&units=metric`)
 }
 

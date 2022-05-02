@@ -3,7 +3,7 @@
     <div class="container center">
       <h1 class="heading">Weather</h1>
       <div class="search-bar">
-        <input type="text" v-model="searchCity" autofocus>
+        <input type="text" v-model="searchCity">
         <button @click="search">Search</button>
         <span class="msg"></span>
       </div>
@@ -18,7 +18,7 @@
           :position="currentPosition"
         />
         <WeatherCard
-          v-for="(city, index) in citys"
+          v-for="(city, index) in cityIds"
           :key="index"
           :city="city"
         />
@@ -36,7 +36,7 @@ export default {
     ready: false,
     currentPosition: {},
     searchCity:'',
-    citys: []
+    cityIds: []
   }),
   mounted() {
     navigator.geolocation.getCurrentPosition((position) => {
@@ -45,7 +45,11 @@ export default {
   },
   methods: {
     search () {
-      this.citys.push(this.searchCity);
+      const cityList = require('../city.list.json');
+      const city = cityList.filter(
+        (city) => city.name.toLowerCase() === this.searchCity.toLowerCase()
+      );
+      this.cityIds.push(...city);
       this.searchCity = '';
     }
   },
@@ -175,7 +179,7 @@ export default {
 }
  
 @media screen and (max-width: 500px) {  
-  section .cities {
+  .cards .cities {
     grid-template-columns: repeat(1, 1fr);
   }
 

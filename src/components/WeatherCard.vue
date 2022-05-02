@@ -3,8 +3,9 @@
     <div v-if="!ready"><img src = "../assets/spinner-dark.svg"></div>
     <div v-if="ready">
       <h2 class="city-name">
-        <span>{{ cityTrueName }}</span>
+        <span><span v-if="position"></span>{{ cityName }}</span>
         <sup>{{ country }}</sup>
+        <sup v-if="state">{{ state }}</sup>
       </h2>
       <span class="city-temp">{{ temperature }}<sup>°C</sup></span>
       <figure>
@@ -17,7 +18,7 @@
 </template>
 
 <script>
-import { getTemperatureByCity, getTemperatureByPosition } from '../weather';
+import { getTemperatureByCityId, getTemperatureByPosition } from '../weather';
 
 export default {
   name: 'WeatherCard',
@@ -25,29 +26,29 @@ export default {
     temperature: 0,
     minTemperature: 0,
     maxTemperature: 0,
-    cityTrueName: '',
+    cityName: '',
     ready: false,
     weatherDescription: '',
     iconUrl: '',
-    country: ''
+    country: '',
+    state:''
   }),
   props: {
-    city: String,
-    position: Object,
-    currentMonth: String,
-    currentDay: Number,
+    city: Object,
+    position: Object
   },
   async mounted () {
     this.ready = false;
-    const response = this.position ? await getTemperatureByPosition(this.position) : await getTemperatureByCity(this.city);
+    const response = this.position ? await getTemperatureByPosition(this.position) : await getTemperatureByCityId(this.city.id);
     const iconId = response.data.weather[0].icon;
     this.temperature = Math.round(response.data.main.temp * 10) / 10;
     this.minTemperature = Math.round(response.data.main.temp_min * 10) / 10;
     this.maxTemperature = Math.round(response.data.main.temp_max * 10) / 10;
-    this.cityTrueName = response.data.name;
+    this.cityName = response.data.name;
     this.weatherDescription = response.data.weather[0].description;
     this.iconUrl = `https://openweathermap.org/img/wn/${iconId}@2x.png`;
     this.country = response.data.sys.country;
+    this.state = this.city && this.city.state;
     this.ready = true;
   }
 }
@@ -61,19 +62,6 @@ export default {
   border-radius: 20px;
   background: var(--text_light);
   color: var(--text_med);
-}
- 
-.city::after {
-  content: ’’;
-  width: 90%;
-  height: 50px;
-  position: absolute;
-  bottom: -12px;
-  left: 5%;
-  z-index: -1;
-  opacity: 0.3;
-  border-radius: 20px;
-  background: var(--text_light);
 }
  
 figcaption {
@@ -99,6 +87,19 @@ figcaption {
   color: var(--text_light);
   background: var(--orange);
   margin-left: 0.2rem;
+}
+
+.city-name sup:nth-child(3) {
+  background: var(--text_med);
+}
+
+.city-name span span::before {
+  content: "";
+  display: inline-block;
+  background: url("../assets/current-location.svg") no-repeat;
+  width: 1em;
+  height: 0.8em;
+  filter: invert(37%) sepia(8%) saturate(1514%) hue-rotate(180deg) brightness(96%) contrast(90%);
 }
  
 .city-icon {
