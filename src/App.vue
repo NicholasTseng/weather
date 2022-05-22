@@ -9,6 +9,9 @@ export default {
   name: 'App',
   components: {
     Weather
+  },
+  created () {
+    document.title = "Vuedo List";
   }
 }
 </script>
