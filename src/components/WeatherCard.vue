@@ -55,7 +55,6 @@ export default {
 </script>
 
 <style scoped>
-
 .city {
   position: relative;
   padding: 40px 10%;

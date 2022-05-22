@@ -1,5 +1,13 @@
 <template>
-  <section class="top-banner">
+  <div v-if="isOpenPopUp" class="modal">
+    <PopUpModal
+      v-model:isOpenPopUp = "isOpenPopUp"
+      v-model:duplicateCityList = "duplicateCityList"
+      :cityName="duplicateCityName"
+      :number="duplicateCityLength"
+    />
+  </div>
+  <div :class="[isOpenPopUp ? 'blur-background' : '', 'top-banner' ]">
     <div class="container center">
       <h1 class="heading">Weather</h1>
       <div class="search-bar">
@@ -8,13 +16,13 @@
         <span class="msg"></span>
       </div>
     </div>
-  </section>
-  <section class="cards">
-    <div class="spinner" v-if="!ready"><img src = "../assets/spinner.svg"></div>
+  </div>
+  <div :class="[isOpenPopUp ? 'blur-background' : '', 'cards' ]">
+    <div class="spinner" v-if="!geoReady"><img src = "../assets/spinner.svg"></div>
     <div class="container">
       <div class="cities">
         <WeatherCard
-          v-if="ready"
+          v-if="geoReady"
           :position="currentPosition"
         />
         <WeatherCard
@@ -22,22 +30,27 @@
           :key="index"
           :city="city"
         />
+      </div>
     </div>
-    </div>
-  </section>
+  </div>
 </template>
 
 <script>
 import WeatherCard from '@/components/WeatherCard.vue';
+import PopUpModal from '@/components/PopUpModal.vue';
 
 export default {
   name: "WeatherView",
   data: () => ({
-    ready: false,
+    geoReady: false,
     currentPosition: {},
     searchCity:'',
     cityIds: [],
-    cityList: []
+    cityList: [],
+    duplicateCityName: '',
+    isOpenPopUp: false,
+    duplicateCityLength: 0,
+    duplicateCityList: [],
   }),
   mounted() {
     this.cityList = require('../city.list.json');
@@ -50,17 +63,30 @@ export default {
       const city = this.cityList.filter(
         (city) => city.name.toLowerCase() === this.searchCity.toLowerCase()
       );
-      this.cityIds.push(...city);
+
+      if (city.length > 1) {
+        this.duplicateCityLength = city.length;
+        this.duplicateCityName = city[0].name;
+        this.duplicateCityList = city;
+        this.isOpenPopUp = true;
+      } else {
+        this.cityIds.push(...city);
+      }
+
       this.searchCity = '';
     }
   },
   watch: {
-    currentPosition() {
-      this.ready = true;
+    currentPosition () {
+      this.geoReady = true;
+    },
+    isOpenPopUp () {
+      !this.isOpenPopUp && this.cityIds.push(...this.duplicateCityList);
     }
   },
   components: {
-    WeatherCard
+    WeatherCard,
+    PopUpModal
   },
 };
 </script>
@@ -148,14 +174,26 @@ export default {
   grid-template-columns: repeat(4, 1fr);
 }
 
+.modal {
+  position:fixed;
+  z-index: 1000;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.blur-background {
+  filter: blur(8px);
+}
+
 @media screen and (max-width: 1000px) { 
-  section .cities {
+  div .cities {
     grid-template-columns: repeat(3, 1fr);
   }
 }
  
 @media screen and (max-width: 700px) {
-  section .cities {
+  div .cities {
     grid-template-columns: repeat(2, 1fr);
   }
 
