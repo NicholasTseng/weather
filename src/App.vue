@@ -11,7 +11,7 @@ export default {
     Weather
   },
   created () {
-    document.title = "Vuedo List";
+    document.title = "Weather";
   }
 }
 </script>
