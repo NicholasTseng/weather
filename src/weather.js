@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const urlBase = 'https://api.openweathermap.org/data/2.5/';
-const apiKey = '9690b17513bd322138a06b169c76d30e';
+const apiKey = '';
 
 export const getTemperatureByPosition = (position) => {
   const latitude = position.coords.latitude;
